@@ -1,78 +1,47 @@
 <html>
-<head>
-<style>
-body { font-family: arial, helvetica, sans-serif; font-size: 13px; }
-.container { padding: 10px; background: rgba(0,0,0,0.1); }
-button { border: none; display: block; font-family: sans-serif; padding: 10px; background: royalblue; color: white; }
-a { display: block; padding: 10px 0; }
-.preview { padding: 10px; border: 1px solid rgba(0,0,0,0.1); margin: 5px 0; }
-h1 { margin: 0; }
-.preview img { max-width: 100%; }
-label { display: block; margin-top: 10px; }
-input, textarea { box-sizing: border-box; border: none; display: block; width: 100%; padding: 10px; margin: 5px 0; background: white; }
-</style>
-<script src="https://unpkg.com/rarepress.js@0.0.15"></script>
+<body>
+<pre id='token'></pre>
+<pre id='receipt'></pre>
+<script src="https://unpkg.com/rareterm@0.0.9"></script>
 <script>
-let cid;
-document.addEventListener("DOMContentLoaded", async () => {
-	const rarepress = new Rarepress();
-  await rarepress.init({ host: "https://rarepress.org/v0" })
-  let image = document.querySelector('#image')
-  let name = document.querySelector('#name');
-  let descriptioin = document.querySelector('#description')
-  image.addEventListener('change', async (event) => {
-    let file = image.files[0];
-    cid = await rarepress.add(file)
-    document.querySelector(".preview img").setAttribute("src", "https://rarepress.org/ipfs/" + cid)
-  })
-  name.addEventListener("input", (event) => {
-    document.querySelector(".preview h1").innerHTML = event.target.value;
-  })
-  description.addEventListener("input", (event) => {
-    document.querySelector(".preview p").innerHTML = event.target.value;
-  })
-  document.querySelector("#mint").addEventListener("click", async (e) => {
-    let name = document.querySelector("#name").value;
-    let description = document.querySelector("#description").value;
-    if (name.length === 0 || description.length === 0 || !cid) {
-    	alert("Please fill in all the fields!")
-    } else {
-      let token = await rarepress.create({
-        metadata: {
-          name: document.querySelector("#name").value,
-          description: document.querySelector("#description").value,
-          image: "/ipfs/" + cid,
-          attributes: [
-            { trait_type: "powered by", value: "Rarepress https://rarepress.org" },
-            { trait_type: "date", value: new Date().toUTCString() },
-          ]
-        },
-      })
-      document.querySelector("#minted").setAttribute("href", "https://rarible.com/token/" + token.id)
-      document.querySelector("#minted").innerHTML = "View on Rarible";
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+let title = urlParams.get('title')
+let desc = urlParams.get('desc')
+
+
+const mint = async () => {
+
+  // 1. Initialize a rarepress object from Rareterm
+  const rarepress = new Rareterm();
+  // 2. Connect to a rinkeby rarenet node
+  await rarepress.init({ host: "https://eth.rarenet.app/v1" })
+
+  // 3. Import a web image to rarepress file system
+  let cid = await rarepress.fs.add("https://i.imgur.com/7VtdUHN.jpeg")
+
+  // 4. Create and save a token on rarepress
+  let token = await rarepress.token.create({
+    type: "ERC721",
+    metadata: {
+      name: title,
+      description: desc,
+      image: "/ipfs/" + cid
     }
   })
-})
+
+  // 5. Publish the image on public IPFS
+  await rarepress.fs.push(cid)
+  // 6. Publish the metadata on public IPFS
+  await rarepress.fs.push(token.tokenURI)
+
+  // 7. Publish the token to the marketplace
+  let receipt = await rarepress.token.send(token)
+
+  document.querySelector("#token").innerHTML = "token object\n\n" + JSON.stringify(token, null, 2)
+  document.querySelector("#receipt").innerHTML = "token publish receipt\n\n" + JSON.stringify(receipt, null, 2)
+}
+mint()
 </script>
-</head>
-<body>
-  <h1>Serverless NFT Printer</h1>
-  <p>Fill out the fields and mint your own NFT from inside your browser!</p>
-  <div class='container'>
-    <label>name</label>
-    <input id='name' type='text' placeholder='name'>
-    <label>description</label>
-    <textarea id='description' placeholder='description'></textarea>
-    <label>image</label><input id='image' type='file'>
-    <label>preview</label>
-    <div class='preview'>
-      <h1></h1>
-      <p></p>
-      <img>
-    </div>
-    <button id='mint'>mint</button>
-    <a id='minted' href="#" target="_blank"></a>
-    <img>  
-  </div>
 </body>
 </html>
