@@ -18,8 +18,7 @@ const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 let title = urlParams.get('title')
 let desc = urlParams.get('desc')
-let cid = urlParams.get('cid')
-
+let link = urlParams.get('link')
 
 document.addEventListener("DOMContentLoaded", async () => {
   const rarepress = new Rareterm();
@@ -29,6 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let descriptioin = document.querySelector('#description')
   image.addEventListener('change', async (event) => {
     let file = image.files[0];
+    cid = await rarepress.fs.add(link)
     document.querySelector(".preview img").setAttribute("src", "https://eth.rarenet.app/ipfs/" + cid)
   })
   name.addEventListener("input", (event) => {
@@ -37,7 +37,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   description.addEventListener("input", (event) => {
     document.querySelector(".preview p").innerHTML = event.target.value;
   })
-  document.querySelector("#mint").addEventListener("click", async (e) => {    
+  document.querySelector("#mint").addEventListener("click", async (e) => {
+    
     	// Create and save token privately on Rarepress
       let token = await rarepress.token.create({
       	type: "ERC721",
