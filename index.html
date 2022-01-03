@@ -37,13 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   description.addEventListener("input", (event) => {
     document.querySelector(".preview p").innerHTML = event.target.value;
   })
-  document.querySelector("#mint").addEventListener("click", async (e) => {
-    let name = document.querySelector("#name").value;
-    let description = document.querySelector("#description").value;
-    if (name.length === 0 || description.length === 0 || !cid) {
-    	alert("Please fill in all the fields!")
-    } else {
-    
+  document.querySelector("#mint").addEventListener("click", async (e) => {    
     	// Create and save token privately on Rarepress
       let token = await rarepress.token.create({
       	type: "ERC721",
@@ -67,7 +61,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       
       document.querySelector("#minted").setAttribute("href", "https://rarible.com/token/" + sent.id)
       document.querySelector("#minted").innerHTML = "View on Rarible";
-    }
+    
   })
 })
 </script>
