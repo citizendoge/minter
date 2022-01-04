@@ -20,7 +20,6 @@ let title = urlParams.get('title')
 let desc = urlParams.get('desc')
 let link = urlParams.get('link')
 
-let cid;
 document.addEventListener("DOMContentLoaded", async () => {
   const rarepress = new Rareterm();
   await rarepress.init({ host: "https://eth.rarenet.app/v1" })
@@ -29,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let descriptioin = document.querySelector('#description')
   image.addEventListener('change', async (event) => {
     let file = image.files[0];
-    cid = await rarepress.fs.add(link)
+    let cid = await rarepress.fs.add(link)
     document.querySelector(".preview img").setAttribute("src", "https://eth.rarenet.app/ipfs/" + cid)
   })
   name.addEventListener("input", (event) => {
