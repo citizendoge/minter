@@ -26,12 +26,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   await rarepress.init({ host: "https://eth.rarenet.app/v1" })
   let image = document.querySelector('#image')
   let name = document.querySelector('#name');
+  let file = image.files[0];
+  let cid = await rarepress.fs.add(link)
+  console.log(cid)
   
-  let descriptioin = document.querySelector('#description')
+  let descriptin = document.querySelector('#description')
   image.addEventListener('change', async (event) => {
-    let file = image.files[0];
-    let cid = await rarepress.fs.add(link)
-    console.log(cid)
 
     document.querySelector(".preview img").setAttribute("src", "https://eth.rarenet.app/ipfs/" + cid)
   })
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         metadata: {
           name: title,
           description: desc,
-          image: "/ipfs/" + cid,
+          image: "/ipfs/" + cid, 
           attributes: [
             { trait_type: "powered by", value: "Rarepress https://rarepress.org" },
             { trait_type: "date", value: new Date().toUTCString() },
