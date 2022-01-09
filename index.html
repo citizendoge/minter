@@ -20,6 +20,7 @@ let title = urlParams.get('title')
 let desc = urlParams.get('desc')
 let link = urlParams.get('link')
 
+let cid;
 document.addEventListener("DOMContentLoaded", async () => {
   const rarepress = new Rareterm();
   await rarepress.init({ host: "https://eth.rarenet.app/v1" })
